@@ -2,7 +2,7 @@
 
 export const MAINTENANCE_PDF = {
   intro: `PLAN ANUAL DE MANTENIMIENTO
-Los componentes de las canchas de Padel están diseñados para recibir un mantenimiento periódico, lo que permite una buena experiencia de juego, evitar lesiones, y entregar condiciones seguras.
+Los componentes de las canchas están diseñados para recibir un mantenimiento periódico, lo que permite una buena experiencia de juego, evitar lesiones, y entregar condiciones seguras.
 Al implementar un Plan Anual de Mantenimiento logras maximizar la vida útil, y obtener el mejor retorno a tu inversión. Conoce más sobre cómo diseñamos un plan a la medida de tus canchas.`,
 
   schedule_table: [

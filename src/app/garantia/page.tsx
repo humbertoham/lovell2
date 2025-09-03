@@ -5,11 +5,6 @@ import Button from "@/components/ui/Button";
 import Link from "next/link";
 import { WARRANTY } from "@/lib/data/warranty";
 
-export const metadata = {
-  title: "Garantía | Lövell Pádel",
-  description:
-    "Conoce los años de cobertura, condiciones y exclusiones de la garantía Lövell para canchas de pádel.",
-};
 
 export default function GarantiaPage() {
   return (

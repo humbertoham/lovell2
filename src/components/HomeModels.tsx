@@ -15,7 +15,7 @@ export default function HomeModels() {
             Nuestros Modelos
           </h2>
           <p className="mt-2 text-[var(--lovell-muted)]">
-            Canchas de pádel diseñadas con diferentes configuraciones: desde
+            Canchas deportivas diseñadas con diferentes configuraciones: desde
             opciones clásicas hasta panorámicas premium.
           </p>
         </div>

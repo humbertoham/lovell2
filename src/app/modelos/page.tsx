@@ -6,11 +6,6 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 import { MODELS } from "@/lib/data/models";
 
-export const metadata = {
-  title: "Modelos | Lövell",
-  description:
-    "Descubre todos los modelos de canchas de pádel Lövell: Classic, Semi Panoramic y Panoramic 1-4.",
-};
 
 export default function ModelosPage() {
   return (

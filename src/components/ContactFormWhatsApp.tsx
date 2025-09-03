@@ -44,7 +44,7 @@ export default function ContactFormWhatsApp({ className }: { className?: string 
   function buildMessage(d: FormState) {
     // Mensaje claro y compacto en varias líneas
     const lines = [
-      "Hola Lövell 👋 Me interesa una cancha de pádel.",
+      "Hola Lövell 👋 Me interesa una cancha deportiva.",
       `• Nombre: ${d.nombre}`,
       `• Email: ${d.email}`,
       `• Teléfono: ${d.telefono}`,

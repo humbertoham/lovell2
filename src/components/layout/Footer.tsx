@@ -15,7 +15,7 @@ export default function Footer() {
            <Image src="../../logolovell2.svg" alt="Lovell" width={200} height={40}/>
           </div>
           <p className="mt-4 text-sm text-white/80 max-w-xs">
-            Fabricación, instalación y mantenimiento de canchas de pádel en toda
+            Fabricación, instalación y mantenimiento de canchas deportivas en toda
             la República Mexicana.
           </p>
         </div>
@@ -27,7 +27,7 @@ export default function Footer() {
           </h3>
           <ul className="space-y-2 text-sm">
             <li><Link href="/modelos" className=" text-white/80 hover:underline">Modelos</Link></li>
-            <li><Link href="/acerca" className="text-white/80 hover:underline">Acerca de</Link></li>
+            <li><Link href="/acerca" className="text-white/80 hover:underline">¿Quiénes somos?</Link></li>
             <li><Link href="/proyectos" className="text-white/80 hover:underline">Proyectos</Link></li>
             <li><Link href="/mantenimiento" className="text-white/80 hover:underline">Mantenimiento</Link></li>
             <li><Link href="/garantia" className="text-white/80 hover:underline">Garantía</Link></li>
@@ -41,7 +41,10 @@ export default function Footer() {
             Servicios
           </h3>
           <ul className="space-y-2 text-sm text-white/80">
-        
+         <li>Asesoría</li>
+            <li>Branding</li>
+            <li>Business plan</li>
+            <li>Construcción</li>
             <li>Mantenimientos preventivos</li>
             <li>Fabricación e instalación de canchas deportivas</li>
           </ul>

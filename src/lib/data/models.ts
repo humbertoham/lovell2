@@ -44,7 +44,7 @@ export const MODELS: ModelVariant[] = [
         description: "Faldones, placas y acabados con logotipo del cliente",
       },
     ],
-    gallery: ["/images/modelos/classic.jpg"],
+    gallery: ["/renders/classic/1.png","/renders/classic/2.png","/renders/classic/3.png"],
   },
   {
     id: "semi-panoramic",
@@ -69,7 +69,7 @@ export const MODELS: ModelVariant[] = [
         name: "Branding y placas personalizadas",
       },
     ],
-    gallery: ["/images/modelos/semi-panoramic.jpg"],
+    gallery: ["/renders/semi/1.png","/renders/semi/2.png","/renders/semi/3.png"],
   },
   {
     id: "panoramic-1",
@@ -93,7 +93,7 @@ export const MODELS: ModelVariant[] = [
         name: "Branding y placas personalizadas",
       },
     ],
-    gallery: ["/images/modelos/panoramic-1.jpg"],
+    gallery: ["/renders/pano1/1.png","/renders/pano1/2.png","/renders/pano1/3.png"],
   },
   {
     id: "panoramic-2",
@@ -118,7 +118,7 @@ export const MODELS: ModelVariant[] = [
         name: "Branding y placas personalizadas",
       },
     ],
-    gallery: ["/images/modelos/panoramic-2.jpg"],
+    gallery: ["/renders/pano2/1.png","/renders/pano2/2.png","/renders/pano2/3.png"],
   },
   {
     id: "panoramic-3",
@@ -144,7 +144,7 @@ export const MODELS: ModelVariant[] = [
         name: "Branding y placas personalizadas",
       },
     ],
-    gallery: ["/images/modelos/panoramic-3.jpg"],
+    gallery: ["/renders/pano3/1.png","/renders/pano3/2.png","/renders/pano3/3.png"],
   },
   {
     id: "panoramic-4",
@@ -170,6 +170,6 @@ export const MODELS: ModelVariant[] = [
         name: "Branding y placas personalizadas",
       },
     ],
-    gallery: ["/images/modelos/panoramic-4.jpg"],
+    gallery: ["/renders/pano4/1.png","/renders/pano4/2.png","/renders/pano4/3.png"],
   },
 ];

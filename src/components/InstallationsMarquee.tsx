@@ -11,7 +11,7 @@ export default function InstallationsMarquee() {
           Presencia en todo México
         </h2>
         <p className="mt-2 text-[var(--lovell-muted)]">
-          Canchas instaladas en más de 20 estados de la República.
+          Canchas instaladas en más de 25 estados de la República.
         </p>
       </div>
 

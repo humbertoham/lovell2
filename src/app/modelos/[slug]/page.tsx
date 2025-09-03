@@ -1,4 +1,3 @@
-// app/modelos/[slug]/page.tsx
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Button from "@/components/ui/Button";
@@ -6,28 +5,42 @@ import { MODELS } from "@/lib/data/models";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Carousel from "@/components/ui/Carousel";
+import Image from "next/image";
 
 export async function generateStaticParams() {
   return MODELS.map((m) => ({ slug: m.slug }));
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const model = MODELS.find((m) => m.slug === params.slug);
-  if (!model) return {};
-  return {
-    title: `${model.name} | Lövell`,
-    description: model.description,
-  };
-}
 
-export default function ModeloPage({ params }: { params: { slug: string } }) {
-  const model = MODELS.find((m) => m.slug === params.slug);
+// Imágenes de postes de luminarias disponibles
+const POSTES_IMAGES = [
+  "/renders/postes/1.png",
+  "/renders/postes/2.png",
+  "/renders/postes/3.png",
+  "/renders/postes/4.png",
+];
+
+// Paleta de colores de pasto disponibles
+const TURF_COLORS: { name: string; hex: string }[] = [
+  { name: "Azul", hex: "#1e3a8a" },
+  { name: "Verde", hex: "#15803d" },
+  { name: "Rojo", hex: "#b91c1c" },
+  { name: "Negro", hex: "#111827" },
+  { name: "Rosa", hex: "#FF1D8D" },
+  { name: "Terracota", hex: "#E2725B" },
+];
+
+export default async function ModeloPage(
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  const { slug } = await params;
+  const model = MODELS.find((m) => m.slug === slug);
   if (!model) return notFound();
 
   const images =
     model.gallery && model.gallery.length > 0
       ? model.gallery
-      : [`/images/modelos/${model.slug}.jpg`];
+      : Array.from({ length: 4 }, (_, i) => `/renders/modelos/${model.slug}/${i + 1}.jpg`);
 
   return (
     <div className="relative">
@@ -82,6 +95,60 @@ export default function ModeloPage({ params }: { params: { slug: string } }) {
           </div>
         </section>
 
+        {/* Postes de luminarias disponibles */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-[var(--lovell-logo-text)] mb-4">
+            Postes de luminarias disponibles
+          </h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {POSTES_IMAGES.map((src, i) => (
+              <div key={i} className="relative aspect-[3/4] w-full overflow-hidden rounded-xl shadow bg-white">
+                <Image
+                  src={src}
+                  alt={`Poste ${i + 1}`}
+                  fill
+                  className="object-contain p-4"
+                />
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Colores de pasto disponibles + Pintura/Personalización */}
+        <section className="mb-16">
+          <h2 className="text-2xl font-bold text-[var(--lovell-logo-text)] mb-4">
+            Colores de pasto disponibles
+          </h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {TURF_COLORS.map((c) => (
+              <div key={c.name} className="flex items-center gap-3 card bg-white">
+                <span
+                  className="inline-block h-6 w-6 rounded-md border"
+                  style={{ backgroundColor: c.hex, borderColor: "#e5e7eb" }}
+                  aria-hidden
+                />
+                <span className="text-sm text-[var(--lovell-logo-text)] font-medium">{c.name}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 grid md:grid-cols-2 gap-6">
+            <div className="card bg-white">
+              <h3 className="text-lg font-semibold text-[var(--lovell-logo-text)]">Pintura</h3>
+              <p className="mt-2 text-sm text-[var(--lovell-muted)]">
+                100% de la cancha con pintura electrostática horneada.
+              </p>
+            </div>
+            <div className="card bg-white">
+              <h3 className="text-lg font-semibold text-[var(--lovell-logo-text)]">Personalización</h3>
+              <p className="mt-2 text-sm text-[var(--lovell-muted)]">
+                Incluimos faldones elaborados con lámina de acero inoxidable, esquineros y placas de acero
+                personalizadas con el logotipo del cliente.
+              </p>
+            </div>
+          </div>
+        </section>
+
         {/* Extras */}
         {model.addons?.length > 0 && (
           <section className="mb-16">
@@ -105,12 +172,12 @@ export default function ModeloPage({ params }: { params: { slug: string } }) {
             ¿Listo para cotizar el modelo {model.name}?
           </h3>
           <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/cotizador">
+            <Link href="/contacto">
               <Button size="lg" rounded="full">
                 Cotizar ahora
               </Button>
             </Link>
-            <Link href="/contacto">
+            <Link href="https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0">
               <Button size="lg" variant="outline" rounded="full">
                 Hablar con asesor
               </Button>
@@ -119,7 +186,6 @@ export default function ModeloPage({ params }: { params: { slug: string } }) {
         </section>
       </main>
 
-      <Footer />
     </div>
   );
 }

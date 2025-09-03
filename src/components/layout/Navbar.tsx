@@ -21,7 +21,7 @@ interface NavbarProps {
 
 const NAV_LINKS = [
   { href: "/modelos", label: "Modelos" },
-  { href: "/acerca", label: "Acerca de" },
+  { href: "/acerca", label: "¿Quiénes somos?" },
   { href: "/proyectos", label: "Proyectos" },
   { href: "/mantenimiento", label: "Mantenimiento" },
   { href: "/garantia", label: "Garantía" },
@@ -57,8 +57,8 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
   const solid = !isHome || scrolled;
 
   // Colores de texto según modo y estado
-  const baseText = mode === "light" ? "text-white" : "text-[var(--lovell-logo-text)]";
-  const hoverText = mode === "light" ? solid ? "hover:text-[var(--lovell-logo-text)]" :  "hover:text-white/70" : "hover:text-[color-mix(in_srgb,var(--lovell-logo-text)_80%,black)]";
+  const baseText = mode === "light" ? "text-[var(--lovell-logo-text)]" : "text-[var(--lovell-logo-text)]";
+  const hoverText = mode === "light" ? solid ? "hover:text-[var(--lovell-logo-text)]" :  "hover:text-[var(--lovell-logo-text)]" : "hover:text-[color-mix(in_srgb,var(--lovell-logo-text)_80%,black)]";
 
   return (
     <div
@@ -66,7 +66,7 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
         "fixed inset-x-0 top-0 z-50",
         solid
           ? "bg-white/85 border-b border-[var(--lovell-line)]"
-          : "bg-transparent",
+          : "bg-white/85 border-b border-[var(--lovell-line)]",
       ].join(" ")}
       aria-label="Barra de navegación"
     >
@@ -74,7 +74,7 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
         <div className="flex h-16 items-center py-5 justify-between">
           {/* Logo */}
           <Link href="/" className="group inline-flex items-center gap-2 " aria-label="Lovell Home">
-          {solid ? <Image src="../../logolovell.svg" alt="Lovell" width={200} height={50} /> : <Image src="../../logolovell2.svg" alt="Lovell" width={200} height={50} /> }
+          {solid ? <Image src="../../logolovell.svg" alt="Lovell" width={200} height={50} /> : <Image src="../../logolovell.svg" alt="Lovell" width={200} height={50} /> }
             
           </Link>
 
@@ -194,7 +194,7 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
 
               {/* Banner de marca */}
               <div className="mx-3 mb-3 rounded-xl p-4 text-sm text-white brand-gradient">
-                <div className="font-semibold">Canchas de Pádel Lovell</div>
+                <div className="font-semibold">Canchas deportivas Lövell</div>
                 <div className="opacity-90">Classic, Semi Panoramic y Panoramic 1–4 listas para cotizar.</div>
               </div>
 

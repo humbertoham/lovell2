@@ -5,12 +5,9 @@ import Button from "@/components/ui/Button";
 import Link from "next/link";
 import { INSTALLATIONS } from "@/lib/data/installations";
 import { WARRANTY } from "@/lib/data/warranty";
+import Image from "next/image";
 
-export const metadata = {
-  title: "Nosotros | Lövell",
-  description:
-    "Lövell: soluciones profesionales en instalación de superficies deportivas. Calidad, innovación y servicio.",
-};
+
 
 const SPORTS = [
   "FUTBOL",
@@ -68,7 +65,9 @@ export default function AboutPage() {
 
             {/* Imagen/placeholder */}
             <div className="relative">
-              <div className="aspect-video w-full rounded-2xl overflow-hidden bg-[var(--lovell-bg-soft)] border border-[var(--lovell-line)]" />
+              <div className=" w-full rounded-2xl overflow-hidden bg-[var(--lovell-bg-soft)] border border-[var(--lovell-line)]" />
+                <Image src="/mapa.svg" alt="mapa" width={600} height={300} />
+
               <div className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-brand-md px-4 py-3">
                 <div className="text-sm text-[var(--lovell-muted)]">
                   Presencia en <b className="text-[var(--lovell-logo-text)]">{statesCount}+ estados</b>
@@ -190,7 +189,7 @@ export default function AboutPage() {
               Te acompañamos desde la planificación hasta la instalación y el mantenimiento.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/cotizador">
+              <Link href="/contacto">
                 <Button size="lg" rounded="full" className="bg-white text-[var(--lovell-logo-text)] hover:bg-white/90">
                   Cotizar ahora
                 </Button>

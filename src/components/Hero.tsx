@@ -6,13 +6,14 @@ import Button from '@/components/ui/Button'
 
 // 👉 Coloca tus imágenes en /public/hero/
 const BACKGROUNDS = [
-  '/hero/1.png',
+  '/hero/1.jpeg',
   '/hero/2.png',
   '/hero/3.png',
   '/hero/4.png',
   '/hero/5.png',
   '/hero/6.jpg',
   '/hero/7.jpg',
+  '/hero/8.jpeg',
 ]
 
 const AUTOPLAY_MS = 5000

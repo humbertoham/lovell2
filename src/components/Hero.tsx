@@ -13,6 +13,7 @@ const BACKGROUNDS = [
   '/hero/5.png',
   '/hero/6.jpg',
   '/hero/7.jpg',
+  '/hero/8.png',
 ]
 
 const AUTOPLAY_MS = 5000

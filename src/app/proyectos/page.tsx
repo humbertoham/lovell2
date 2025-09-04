@@ -5,7 +5,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Generar array de 36 imágenes numeradas
-const PROJECTS = Array.from({ length: 36 }, (_, i) => ({
+const PROJECTS = Array.from({ length: 45 }, (_, i) => ({
   src: `/proyectos/${i + 1}.jpeg`,
 }));
 

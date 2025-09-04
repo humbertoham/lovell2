@@ -90,6 +90,24 @@ export default function RootLayout({
             gtag('config', 'AW-11063905055');
           `}
         </Script>
+         <Script id="whatsapp-conversion" strategy="afterInteractive">
+        {`
+          document.addEventListener('click', function (e) {
+            let el = e.target;
+            while (el && el !== document.body) {
+              if (el.matches('a[href*="wa.me/"], a[href*="api.whatsapp.com/"], a[href^="whatsapp://"], [data-whatsapp]')) {
+                if (typeof gtag !== 'undefined') {
+                  gtag('event', 'conversion', {
+                    'send_to': 'AW-11063905055/CONVERSION_LABEL'
+                  });
+                }
+                break;
+              }
+              el = el.parentElement;
+            }
+          }, { capture: true });
+        `}
+      </Script>
         <Navbar/>
         {children}
         <Footer/>

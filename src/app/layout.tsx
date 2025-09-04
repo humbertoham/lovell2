@@ -4,7 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
-
+import Script from "next/script";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -71,7 +71,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-     
+     <head>
+  {/* Etiqueta global de Google Ads */}
+        <Script
+          id="google-ads"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              <!-- Global site tag (gtag.js) - Google Ads -->
+              <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX"></script>
+              <script>
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'AW-11063905055');
+              </script>
+            `,
+          }}
+        />
+     </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

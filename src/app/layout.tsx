@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 
 // app/layout.tsx
 export const metadata = {
-  title: "Lövell | Canchas de Pádel y Superficies Deportivas",
+  title: "Lövell - Ignite The Game",
   description:
     "Lövell fabrica, instala y da mantenimiento a canchas de pádel y superficies deportivas en México. Modelos Classic y Panoramic con pasto sintético premium, cristales templados y garantía de hasta 5 años. Calidad, innovación y servicio.",
   keywords: [
@@ -33,7 +33,7 @@ export const metadata = {
   ],
   authors: [{ name: "Lövell" }],
   openGraph: {
-    title: "Lövell | Canchas de Pádel y Superficies Deportivas",
+    title: "Lövell - Ignite The Game",
     description:
       "Expertos en instalación y mantenimiento de canchas de pádel. Modelos Classic y Panoramic, materiales premium y garantía de hasta 5 años.",
     url: "https://www.lovell-ignitethegame.com/",
@@ -51,7 +51,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lövell | Canchas de Pádel y Superficies Deportivas",
+    title: "Lövell - Ignite The Game",
     description:
       "Fabricación, instalación y mantenimiento de canchas de pádel en México. Modelos Classic y Panoramic con garantía hasta 5 años.",
     images: ["https://www.lovell-ignitethegame.com/og.jpg"], // agrega tu imagen

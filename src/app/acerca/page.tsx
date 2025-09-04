@@ -69,8 +69,8 @@ export default function AboutPage() {
                 <Image src="/mapa.svg" alt="mapa" width={600} height={300} />
 
               <div className="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-brand-md px-4 py-3">
-                <div className="text-sm text-[var(--lovell-muted)]">
-                  Presencia en <b className="text-[var(--lovell-logo-text)]">{statesCount}+ estados</b>
+                <div className="text-base text-[var(--lovell-muted)]">
+                  PROYECTOS EN <b className="text-[var(--lovell-logo-text)]">MÁS DE {statesCount} ESTADOS</b>
                 </div>
               </div>
             </div>

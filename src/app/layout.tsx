@@ -71,28 +71,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-     <head>
-  {/* Etiqueta global de Google Ads */}
-        <Script
-          id="google-ads"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              <!-- Global site tag (gtag.js) - Google Ads -->
-              <script async src="https://www.googletagmanager.com/gtag/js?id=AW-XXXXXXXXX"></script>
-              <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'AW-11063905055');
-              </script>
-            `,
-          }}
-        />
-     </head>
+     
+      
+
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+         <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-11063905055"
+          strategy="afterInteractive"
+        />
+        {/* Inicializa gtag con tu ID */}
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-11063905055');
+          `}
+        </Script>
         <Navbar/>
         {children}
         <Footer/>

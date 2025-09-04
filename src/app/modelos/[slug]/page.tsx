@@ -56,10 +56,10 @@ export default async function ModeloPage(
             <p className="mt-4 text-[var(--lovell-muted)]">{model.description}</p>
 
             <div className="mt-6 flex gap-3">
-              <Link href="/cotizador">
+              <Link href="/contacto">
                 <Button rounded="full">Cotizar este modelo</Button>
               </Link>
-              <Link href="/contacto">
+               <Link href="https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0">
                 <Button variant="outline" rounded="full">
                   Hablar con un asesor
                 </Button>

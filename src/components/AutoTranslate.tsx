@@ -1,50 +1,46 @@
 'use client'
 import { useEffect } from 'react'
 
-/** Utils **/
-const isSpanish = (lang: string) => lang.toLowerCase().startsWith('es')
-const targetFromNavigator = (nav: string): 'en' | 'es' =>
-  isSpanish(nav) ? 'es' : 'en'
+/**
+ * AutoTranslate
+ * - Traduce el DOM a 'en' o 'es' según preferencia del usuario (localStorage 'lovell:lang')
+ * - Sin diccionarios ni cambios en tus componentes con texto en español.
+ * - Observa cambios del DOM (SPA) y re-traduce lo nuevo.
+ */
 
+type Lang = 'es' | 'en'
+const LANG_KEY = 'lovell:lang'
 const BATCH_SIZE = 100
 
-// Hash rápido y estable para cache local
+// Hash simple para cache local
 const hash = (s: string): string => {
   let h = 0
   for (let i = 0; i < s.length; i++) h = (h << 5) - h + s.charCodeAt(i) | 0
   return h.toString()
 }
 
-// Recolecta nodos de texto visibles y traducibles
+// Recolecta nodos de texto traducibles
 function textNodesUnder(root: Node): Text[] {
   const out: Text[] = []
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
     acceptNode(node: Node): number {
       const txt = node.textContent?.trim()
       if (!txt) return NodeFilter.FILTER_REJECT
-
-      // Un Node puede no ser Text, pero SHOW_TEXT garantiza Text.
       const textNode = node as Text
       const parent = textNode.parentElement
       if (!parent) return NodeFilter.FILTER_ACCEPT
-
       const tag = parent.tagName?.toLowerCase()
-      if (tag && ['script', 'style', 'code', 'pre', 'noscript'].includes(tag)) {
-        return NodeFilter.FILTER_REJECT
-      }
-      if (parent.dataset?.noTranslate === 'true') {
-        return NodeFilter.FILTER_REJECT
-      }
+      if (tag && ['script','style','code','pre','noscript'].includes(tag)) return NodeFilter.FILTER_REJECT
+      if (parent.dataset?.noTranslate === 'true') return NodeFilter.FILTER_REJECT
       return NodeFilter.FILTER_ACCEPT
     }
   })
-
   let n: Node | null
   while ((n = walker.nextNode())) out.push(n as Text)
   return out
 }
 
-async function translateBatch(texts: string[], target: 'en' | 'es'): Promise<string[]> {
+async function translateBatch(texts: string[], target: Lang): Promise<string[]> {
   const res = await fetch('/api/translate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -57,46 +53,43 @@ async function translateBatch(texts: string[], target: 'en' | 'es'): Promise<str
 
 declare global {
   interface Window {
-    __trBusy?: boolean
+    __lovellTrBusy?: boolean
   }
 }
 
-function applyTranslationRun(target: 'en' | 'es') {
+function applyTranslationRun(target: Lang) {
   const nodes = textNodesUnder(document.body)
-  if (nodes.length === 0) return
+  if (!nodes.length) return
 
   const originals = nodes.map(n => n.textContent ?? '')
-
-  // 1) Aplica caché local inmediatamente
   const toTranslate: string[] = []
-  const toIndex: number[] = []
-  originals.forEach((text, idx) => {
-    const key = `tr:${target}:${hash(text)}`
+  const mapIdx: number[] = []
+
+  // 1) Cache local inmediata
+  originals.forEach((t, i) => {
+    const key = `tr:${target}:${hash(t)}`
     const cached = localStorage.getItem(key)
     if (cached) {
-      nodes[idx].textContent = cached
+      nodes[i].textContent = cached
     } else {
-      toTranslate.push(text)
-      toIndex.push(idx)
+      toTranslate.push(t)
+      mapIdx.push(i)
     }
   })
 
-  // 2) Traduce en lotes lo que falte y cachea
+  // 2) Lotes pendientes
   ;(async () => {
     for (let i = 0; i < toTranslate.length; i += BATCH_SIZE) {
       const slice = toTranslate.slice(i, i + BATCH_SIZE)
       try {
         const trs = await translateBatch(slice, target)
         trs.forEach((translated, j) => {
-          const globalIdx = toIndex[i + j]
-          const original = originals[globalIdx]
-          nodes[globalIdx].textContent = translated
+          const idx = mapIdx[i + j]
+          const original = originals[idx]
+          nodes[idx].textContent = translated
           localStorage.setItem(`tr:${target}:${hash(original)}`, translated)
         })
       } catch (e) {
-        // En caso de error, dejamos el texto original
-        // y no bloqueamos la UX.
-        // eslint-disable-next-line no-console
         console.error('[AutoTranslate] batch error', e)
       }
     }
@@ -105,35 +98,50 @@ function applyTranslationRun(target: 'en' | 'es') {
 
 export default function AutoTranslate() {
   useEffect(() => {
-    const lang = (typeof navigator !== 'undefined' && navigator.language) ? navigator.language : 'en'
-    if (isSpanish(lang)) return // Si el dispositivo está en español, no hacemos nada.
+    // idioma inicial: lo que haya elegido el usuario; por defecto ES
+    const initial = (localStorage.getItem(LANG_KEY) as Lang) || 'es'
 
-    const target = targetFromNavigator(lang)
+    // primera pasada
+    if (initial !== 'es') applyTranslationRun(initial)
 
-    // Primera pasada (contenido ya renderizado)
-    applyTranslationRun(target)
-
-    // Observar cambios del DOM (navegación interna/SPA, contenido cargado luego)
-    const observer = new MutationObserver(() => {
-      if (window.__trBusy) return
-      window.__trBusy = true
-      // Pequeño throttle para evitar ráfagas
+    // re-traducir en cambios del DOM (SPA)
+    const mo = new MutationObserver(() => {
+      if (window.__lovellTrBusy) return
+      window.__lovellTrBusy = true
       setTimeout(() => {
         try {
-          applyTranslationRun(target)
+          const lang = (localStorage.getItem(LANG_KEY) as Lang) || 'es'
+          if (lang !== 'es') applyTranslationRun(lang)
+          else applyTranslationRun('es') // forzamos volver a ES vía API/cache
         } finally {
-          window.__trBusy = false
+          window.__lovellTrBusy = false
         }
       }, 150)
     })
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true })
 
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      characterData: true
-    })
+    // escucha cambios manuales desde la Navbar (evento custom)
+    const onLangEvent = (e: Event) => {
+      const detail = (e as CustomEvent<{ lang: Lang }>).detail
+      const lang = detail?.lang ?? ((localStorage.getItem(LANG_KEY) as Lang) || 'es')
+      applyTranslationRun(lang)
+    }
+    window.addEventListener('lovell:lang', onLangEvent)
 
-    return () => observer.disconnect()
+    // sync entre pestañas
+    const onStorage = (ev: StorageEvent) => {
+      if (ev.key === LANG_KEY && ev.newValue) {
+        const lang = ev.newValue as Lang
+        applyTranslationRun(lang)
+      }
+    }
+    window.addEventListener('storage', onStorage)
+
+    return () => {
+      mo.disconnect()
+      window.removeEventListener('lovell:lang', onLangEvent)
+      window.removeEventListener('storage', onStorage)
+    }
   }, [])
 
   return null

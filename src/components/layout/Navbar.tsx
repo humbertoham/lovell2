@@ -7,17 +7,8 @@ import { FiMenu, FiX, FiChevronDown, FiArrowUpRight } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 
-/**
- * Lovell Navbar (fixed, transparente en Home, sólido en internas)
- * - Desktop: dropdown de Modelos
- * - Mobile: drawer con sección de Modelos expandible y CTAs
- */
-
 type Mode = "light" | "dark";
-
-interface NavbarProps {
-  mode?: Mode; // "light" para hero oscura; "dark" para fondos claros
-}
+interface NavbarProps { mode?: Mode }
 
 const NAV_LINKS = [
   { href: "/modelos", label: "Modelos" },
@@ -28,7 +19,6 @@ const NAV_LINKS = [
   { href: "/contacto", label: "Contacto" },
 ];
 
-// Lista de modelos (ajusta slugs reales)
 const NAV_MODELS: Array<{ slug: string; name: string; blurb: string; tag?: string }> = [
   { slug: "classic", name: "Classic", blurb: "Estructura estándar, robusta y versátil.", tag: "Popular" },
   { slug: "semi-panoramic", name: "Semi Panoramic", blurb: "Mayor visibilidad con laterales mixtos." },
@@ -38,12 +28,29 @@ const NAV_MODELS: Array<{ slug: string; name: string; blurb: string; tag?: strin
   { slug: "panoramic-4", name: "Panoramic 4", blurb: "Máxima visibilidad y experiencia de juego." },
 ];
 
+// ===== i18n toggle helpers =====
+type Lang = 'es' | 'en'
+const LANG_KEY = 'lovell:lang'
+function getLang(): Lang {
+  if (typeof window === 'undefined') return 'es'
+  const saved = localStorage.getItem(LANG_KEY) as Lang | null
+  return saved ?? 'es'
+}
+function setLang(lang: Lang) {
+  localStorage.setItem(LANG_KEY, lang)
+  // Notificar a AutoTranslate
+  window.dispatchEvent(new CustomEvent('lovell:lang', { detail: { lang } }))
+}
+
 export default function Navbar({ mode = "light" }: NavbarProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [modelsOpen, setModelsOpen] = useState(false);
   const [modelsMobileOpen, setModelsMobileOpen] = useState(false);
+
+  // idioma UI
+  const [lang, setLangState] = useState<Lang>('es')
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 8);
@@ -52,21 +59,39 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Home => transparente; internas => sólido. En home cambia a sólido al hacer scroll
+  // init lang desde localStorage
+  useEffect(() => {
+    setLangState(getLang())
+    const onStorage = (ev: StorageEvent) => {
+      if (ev.key === LANG_KEY && ev.newValue) setLangState(ev.newValue as Lang)
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+
   const isHome = pathname === "/";
   const solid = !isHome || scrolled;
 
-  // Colores de texto según modo y estado
   const baseText = mode === "light" ? "text-white" : "text-[var(--lovell-logo-text)]";
-  const hoverText = mode === "light" ? solid ? "hover:text-[var(--lovell-logo-text)]" :  "hover:text-white/70" : "hover:text-[color-mix(in_srgb,var(--lovell-logo-text)_80%,black)]";
+  const hoverText =
+    mode === "light"
+      ? solid
+        ? "hover:text-[var(--lovell-logo-text)]"
+        : "hover:text-white/70"
+      : "hover:text-[color-mix(in_srgb,var(--lovell-logo-text)_80%,black)]";
+
+  // Acción del toggle
+  const toggleLang = () => {
+    const next: Lang = lang === 'es' ? 'en' : 'es'
+    setLang(next)
+    setLangState(next)
+  }
 
   return (
     <div
       className={[
         "fixed inset-x-0 top-0 z-50",
-        solid
-          ? "bg-white/85 border-b border-[var(--lovell-line)]"
-          : "bg-transparent",
+        solid ? "bg-white/85 border-b border-[var(--lovell-line)]" : "bg-transparent",
       ].join(" ")}
       aria-label="Barra de navegación"
     >
@@ -74,8 +99,10 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
         <div className="flex h-16 items-center py-5 justify-between">
           {/* Logo */}
           <Link href="/" className="group inline-flex items-center gap-2 " aria-label="Lovell Home">
-          {solid ? <Image src="../../logolovell.svg" alt="Lovell" width={200} height={50} /> : <Image src="../../logolovell2.svg" alt="Lovell" width={200} height={50} /> }
-            
+            {solid
+              ? <Image src="../../logolovell.svg" alt="Lovell" width={200} height={50} />
+              : <Image src="../../logolovell2.svg" alt="Lovell" width={200} height={50} />
+            }
           </Link>
 
           {/* Desktop nav */}
@@ -118,9 +145,7 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
                         >
                           <div className="flex items-start justify-between">
                             <div className="text-[var(--lovell-logo-text)] font-semibold">{m.name}</div>
-                            {m.tag && (
-                              <span className="chip text-xs py-0.5">{m.tag}</span>
-                            )}
+                            {m.tag && <span className="chip text-xs py-0.5">{m.tag}</span>}
                           </div>
                           <div className="mt-1 text-sm text-[var(--lovell-muted)]">{m.blurb}</div>
                           <div className="mt-2 inline-flex items-center gap-1 text-sm text-[var(--lovell-teal)]">
@@ -129,7 +154,6 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
                         </Link>
                       ))}
                     </div>
-                 
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -159,12 +183,31 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
               );
             })}
 
-            <Link href="https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0" className="ml-2 inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold text-white" style={{ background: "var(--lovell-logo-text)" }}>
+            {/* CTA */}
+            <Link
+              href="https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0"
+              className="ml-2 inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold text-white"
+              style={{ background: "var(--lovell-logo-text)" }}
+            >
               Cotizar ahora
             </Link>
+
+            {/* === Toggle ES/EN (Desktop) === */}
+            <button
+              onClick={toggleLang}
+              className={[
+                "ml-2 inline-flex items-center rounded-xl px-3 py-2 text-sm font-semibold border transition",
+                solid ? "border-[var(--lovell-line)] text-[var(--lovell-logo-text)]" : "border-white/50 text-white",
+                "hover:bg-[color-mix(in_srgb,var(--lovell-teal)_10%,white)]"
+              ].join(' ')}
+              aria-label="Cambiar idioma"
+              title="Cambiar idioma"
+            >
+              {lang === 'es' ? 'ES' : 'EN'}
+            </button>
           </div>
 
-          {/* Mobile: botón */}
+          {/* Mobile: botón abrir menú */}
           <button
             className={["md:hidden p-2 rounded-lg transition", solid ? "text-[var(--lovell-logo-text)]" : baseText, hoverText].join(" ")}
             onClick={() => setOpen(true)}
@@ -175,7 +218,7 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
         </div>
       </nav>
 
-      {/* Mobile drawer enriquecido */}
+      {/* Mobile drawer */}
       <AnimatePresence>
         {open && (
           <motion.aside initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] md:hidden" aria-modal role="dialog">
@@ -192,13 +235,13 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
                 </button>
               </div>
 
-              {/* Banner de marca */}
+              {/* Banner */}
               <div className="mx-3 mb-3 rounded-xl p-4 text-sm text-white brand-gradient">
                 <div className="font-semibold">Canchas deportivas Lövell</div>
                 <div className="opacity-90">Classic, Semi Panoramic y Panoramic 1–4 listas para cotizar.</div>
               </div>
 
-              {/* Sección Modelos (expandible) */}
+              {/* Modelos (expandible) */}
               <button
                 className="w-full flex items-center justify-between px-4 py-3 text-left font-semibold text-[var(--lovell-logo-text)]"
                 onClick={() => setModelsMobileOpen((v) => !v)}
@@ -226,17 +269,14 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
                         </li>
                       ))}
                     </ul>
-                  
                   </motion.div>
                 )}
               </AnimatePresence>
 
-             
-
               {/* Links restantes */}
-              <div className="px-2 pb-6">
+              <div className="px-2 pb-2">
                 <ul className="space-y-1">
-                  {NAV_LINKS.filter(l => !["/modelos", "https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0"].includes(l.href)).map((l) => {
+                  {NAV_LINKS.filter(l => l.href !== "/modelos").map((l) => {
                     const active = pathname === l.href;
                     return (
                       <li key={l.href}>
@@ -258,12 +298,26 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
                 </ul>
               </div>
 
+              {/* Toggle ES/EN (Mobile) */}
+              <div className="px-3">
+                <button
+                  onClick={() => { toggleLang(); }}
+                  className="w-full rounded-xl border border-[var(--lovell-line)] px-3 py-3 text-base font-semibold text-[var(--lovell-logo-text)]"
+                >
+                  Idioma: {lang === 'es' ? 'ES' : 'EN'}
+                </button>
+              </div>
+
               {/* CTA contacto */}
               <div className="mt-auto px-3 pb-6">
                 <div className="card">
                   <div className="text-sm font-semibold text-[var(--lovell-logo-text)]">¿Necesitas asesoría?</div>
                   <p className="mt-1 text-sm text-[var(--lovell-muted)]">Te ayudamos a elegir el modelo ideal según tu proyecto.</p>
-                  <Link href="https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0" className="mt-3 btn w-full justify-center" onClick={() => setOpen(false)}>
+                  <Link
+                    href="https://api.whatsapp.com/send/?phone=525555006260&text=Hola+L%C3%B6vell+%EF%BF%BD+Me+interesa+una+cancha+de+p%C3%A1del%2C+%C2%BFme+puedes+dar+m%C3%A1s+informaci%C3%B3n%3F&type=phone_number&app_absent=0"
+                    className="mt-3 btn w-full justify-center"
+                    onClick={() => setOpen(false)}
+                  >
                     Hablar con un asesor
                   </Link>
                 </div>
@@ -277,6 +331,8 @@ export default function Navbar({ mode = "light" }: NavbarProps) {
 }
 
 /*
-USO en tu Hero:
-  <Navbar mode="light" />
+USO:
+- Asegúrate de tener <AutoTranslate /> en app/layout.tsx dentro de <body>.
+- El botón ES/EN escribe localStorage('lovell:lang') y dispara el evento 'lovell:lang'.
+- AutoTranslate escucha y aplica la traducción.
 */

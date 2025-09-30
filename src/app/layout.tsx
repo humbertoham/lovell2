@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
+import AutoTranslate from "@/components/AutoTranslate";
 import Script from "next/script";
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,6 +79,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <AutoTranslate/>
          <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-11063905055"
           strategy="afterInteractive"

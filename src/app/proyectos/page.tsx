@@ -1,25 +1,55 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Navbar from "@/components/layout/Navbar";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Generar array de 36 imágenes numeradas
-const PROJECTS = Array.from({ length: 45 }, (_, i) => ({
+/** =========================
+ *  DATA
+ *  ========================= */
+type ItemImage = { type: 'image'; src: string; alt: string };
+type ItemVideo = { type: 'video'; id: string; thumb: string; alt: string };
+type GalleryItem = ItemImage | ItemVideo;
+
+// 45 imágenes numeradas
+const IMAGES: ItemImage[] = Array.from({ length: 45 }, (_, i) => ({
+  type: 'image',
   src: `/proyectos/${i + 1}.jpeg`,
+  alt: `Proyecto ${i + 1}`,
 }));
 
+// Shorts de YouTube (al final)
+const YT_IDS = [
+  'Hf_C3WExdrI',
+  'LthAAh3Rk_Q',
+  'VBD_HalI_eQ',
+  'bGCQ3hQ3SFw',
+];
+
+const VIDEOS: ItemVideo[] = YT_IDS.map((id, idx) => ({
+  type: 'video',
+  id,
+  thumb: `https://img.youtube.com/vi/${id}/hqdefault.jpg`,
+  alt: `Video ${idx + 1} - YouTube Shorts`,
+}));
+
+// Galería completa: primero fotos, luego videos
+const ITEMS: GalleryItem[] = [...IMAGES, ...VIDEOS];
+
+/** =========================
+ *  PAGE
+ *  ========================= */
 export default function ProyectosPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const close = useCallback(() => setOpenIndex(null), []);
   const next = useCallback(() => {
     if (openIndex === null) return;
-    setOpenIndex((i) => (i! + 1) % PROJECTS.length);
+    setOpenIndex((i) => (i! + 1) % ITEMS.length);
   }, [openIndex]);
   const prev = useCallback(() => {
     if (openIndex === null) return;
-    setOpenIndex((i) => (i! - 1 + PROJECTS.length) % PROJECTS.length);
+    setOpenIndex((i) => (i! - 1 + ITEMS.length) % ITEMS.length);
   }, [openIndex]);
 
   // Teclas: ← → Esc
@@ -43,6 +73,11 @@ export default function ProyectosPage() {
     }
   }, [openIndex]);
 
+  const currentItem = useMemo(
+    () => (openIndex !== null ? ITEMS[openIndex] : null),
+    [openIndex]
+  );
+
   return (
     <div className="relative">
       <Navbar mode="dark" />
@@ -58,9 +93,9 @@ export default function ProyectosPage() {
           </p>
         </header>
 
-        {/* Galería */}
+        {/* Galería (fotos + videos al final) */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PROJECTS.map((p, i) => (
+          {ITEMS.map((item, i) => (
             <motion.button
               key={i}
               type="button"
@@ -70,16 +105,42 @@ export default function ProyectosPage() {
               viewport={{ once: true, margin: "-50px" }}
               transition={{ duration: 0.5, delay: i * 0.02 }}
               className="group relative overflow-hidden rounded-2xl shadow-brand-md focus:outline-none focus:ring-2 focus:ring-white/60"
-              aria-label={`Abrir foto ${i + 1}`}
+              aria-label={`Abrir ${item.type === 'image' ? 'foto' : 'video'} ${i + 1}`}
             >
-              <Image
-                src={p.src}
-                alt={`Proyecto ${i + 1}`}
-                width={600}
-                height={400}
-                className="object-cover w-full h-64 group-hover:scale-105 transition-transform duration-500"
-                priority={i < 3}
-              />
+              {/* Tarjeta de imagen */}
+              {item.type === 'image' && (
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  width={600}
+                  height={400}
+                  className="object-cover w-full h-64 group-hover:scale-105 transition-transform duration-500"
+                  priority={i < 3}
+                />
+              )}
+
+              {/* Tarjeta de video */}
+              {item.type === 'video' && (
+                <div className="relative w-full h-64">
+                  <Image
+                    src={item.thumb}
+                    alt={item.alt}
+                    width={600}
+                    height={400}
+                    className="object-cover w-full h-64 group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {/* Overlay Play */}
+                  <div className="absolute inset-0 bg-black/30 opacity-100 group-hover:bg-black/20 transition-colors" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-white/90 group-hover:bg-white text-black text-2xl leading-none">
+                      ▶
+                    </span>
+                  </div>
+                  <span className="absolute left-3 bottom-3 px-2 py-1 text-xs font-medium rounded-md bg-white/85 text-black">
+                    YouTube Shorts
+                  </span>
+                </div>
+              )}
             </motion.button>
           ))}
         </div>
@@ -87,7 +148,7 @@ export default function ProyectosPage() {
 
       {/* Lightbox */}
       <AnimatePresence>
-        {openIndex !== null && (
+        {openIndex !== null && currentItem && (
           <motion.div
             className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm"
             initial={{ opacity: 0 }}
@@ -105,16 +166,27 @@ export default function ProyectosPage() {
               transition={{ type: 'spring', stiffness: 200, damping: 20 }}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Imagen grande */}
+              {/* Contenido grande */}
               <div className="relative aspect-[16/9] md:aspect-[21/9] bg-black/30 rounded-2xl overflow-hidden">
-                <Image
-                  src={PROJECTS[openIndex].src}
-                  alt={`Proyecto ${openIndex + 1} ampliado`}
-                  fill
-                  sizes="(max-width: 768px) 90vw, 70vw"
-                  className="object-contain"
-                  priority
-                />
+                {currentItem.type === 'image' ? (
+                  <Image
+                    src={currentItem.src}
+                    alt={`${currentItem.alt} ampliado`}
+                    fill
+                    sizes="(max-width: 768px) 90vw, 70vw"
+                    className="object-contain"
+                    priority
+                  />
+                ) : (
+                  <iframe
+                    key={currentItem.id} // forzar recreación al cambiar
+                    className="w-full h-full"
+                    src={`https://www.youtube.com/embed/${currentItem.id}?autoplay=1&rel=0&modestbranding=1`}
+                    title={currentItem.alt}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                )}
               </div>
 
               {/* Controles */}
@@ -127,7 +199,7 @@ export default function ProyectosPage() {
                   ← Anterior
                 </button>
                 <span className="text-white/80 text-sm md:text-base select-none">
-                  {openIndex + 1} / {PROJECTS.length}
+                  {openIndex + 1} / {ITEMS.length}
                 </span>
                 <button
                   onClick={next}
